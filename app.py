@@ -40,20 +40,17 @@ def home():
 @app.route('/TrackingData', methods=["POST"])
 def TrackingData():
     req_json = request.get_json()
+    evtData = req_json['evtData']
+    quesData = req_json['quesData']
 
     with sql.connect("UserTracking.db") as connection:
-        for jsonObj in req_json:
-            c = connection.cursor()
-            question_id = jsonObj["question_id"]
-            votes = jsonObj["votes"]
-            answers = jsonObj["answers"]
-            views = jsonObj["views"]
-            c.execute('INSERT INTO UserActions VALUES(?,?,?,?)', [question_id, votes, answers, views])
-
-    # trackingObj = TrackingDetails(jsonObj)
-    # print jsonObj
-    # db.session.add(UserActions(jsonObj["question_id"], jsonObj["votes"], jsonObj["answers"], jsonObj["views"]))
-    # db.session.commit()
+        c = connection.cursor()
+        c.execute('INSERT INTO UserActions VALUES(?,?,?,?,?)', \
+            [evtData['userId'], evtData['evt_type'], evtData['pageHTML'], \
+            evtData['question_id'], evtData['evt_datetime']])
+        c.execute('INSERT INTO QuestionDetails VALUES(?,?,?,?,?,?,?)', \
+            [quesData['question_id'], quesData['pageHTML'], quesData['votes'], \
+            quesData['answers'], quesData['views'], quesData['DateTime'], quesData['Tags']])
 
     return ""
 
@@ -75,7 +72,7 @@ def login():
             flash("You just logged in")
             return redirect(url_for('home'))
 
-            return render_template("login.html", error=error)
+    return render_template("login.html", error=error)
 
 
 @app.route('/logout')

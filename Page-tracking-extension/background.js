@@ -1,18 +1,21 @@
+// Adding listener to look for msgs
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
 
-    sendResponse({"BgResponse": request.QuestionDetails.length});
-    var QuestionDetailsString = JSON.stringify(request.QuestionDetails);
+    sendResponse({"BackgroundResponse": request});
+
+    var contentResponseData = JSON.stringify(request);
+    console.log(request);
 
     $.ajax({
         url: 'https://localhost:5000/TrackingData',
         crossDomain: true,
         contentType: "application/json;charset=utf-8",
         dataType: "json",
-        data: QuestionDetailsString,
+        data: contentResponseData,
         type: 'POST',
         success: function(response) {
             alert(response);
@@ -21,5 +24,5 @@ chrome.runtime.onMessage.addListener(
         error: function(error) {
             console.log("ERROR");
         }
-  });
+    });
 });
