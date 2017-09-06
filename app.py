@@ -42,15 +42,18 @@ def TrackingData():
     req_json = request.get_json()
     evtData = req_json['evtData']
     quesData = req_json['quesData']
+    print evtData
 
     with sql.connect("UserTracking.db") as connection:
         c = connection.cursor()
         c.execute('INSERT INTO UserActions VALUES(?,?,?,?,?)', \
             [evtData['userId'], evtData['evt_type'], evtData['pageHTML'], \
-            evtData['question_id'], evtData['evt_datetime']])
-        c.execute('INSERT INTO QuestionDetails VALUES(?,?,?,?,?,?,?)', \
-            [quesData['question_id'], quesData['pageHTML'], quesData['votes'], \
-            quesData['answers'], quesData['views'], quesData['DateTime'], quesData['Tags']])
+            evtData['object_id'], evtData['evt_datetime']])
+        # Future work - If object_id already exists, dont insert the column again
+        if quesData != None:
+            c.execute('INSERT INTO ObjectDetails VALUES(?,?,?,?,?,?,?,?)', \
+                [quesData['object_type'], quesData['object_id'], quesData['pageHTML'], quesData['votes'], \
+                quesData['answers'], quesData['views'], quesData['DateTime'], quesData['Tags']])
 
     return ""
 
@@ -81,26 +84,6 @@ def logout():
     session.pop('logged_in', None)
     flash("You just logged out")
     return redirect(url_for('welcome'))
-
-
-class TrackingDetails(object):
-    jsonObj = {};
-    ques_id = 0
-    votes = 0
-    answers = 0
-    views = 0
-
-def __init__(self, json):
-    self.jsonObj = json;
-
-def convert(self):
-    ques_id = jsonObj["ques_id"]
-    votes = jsonObj["votes"]
-    answers = jsonObj["answers"]
-    views = jsonObj["views"]
-
-
-
 
 
 if __name__ == '__main__':
