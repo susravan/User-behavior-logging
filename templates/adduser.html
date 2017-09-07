@@ -43,15 +43,17 @@
 	 
 	            	<input type="submit" value="Create User" class="btn btn-primary btn-large btn-block" >
 					<br>
+
+					<!-- errors -->
+					{% if info %}
+						<p class="error"><strong>{{ info }}</strong></p>
+					{% endif %}
 				</div>
 			</div>
 		</div>
 	</form>
 
-	<!-- errors -->
-	{% if error %}
-		<p class="error"><strong>Info:</strong> {{ info }}</p>
-	{% endif %}
+	
 
 </body>
 </html>

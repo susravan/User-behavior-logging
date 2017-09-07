@@ -13,7 +13,7 @@ padding: 50px;
 
 .login {
 margin: 20px auto;
-width: 300px;
+width: 350px;
 }
 
 .login-screen {
@@ -21,13 +21,14 @@ background-color: #FFF;
 padding: 20px;
 border-radius: 5px
 }
- 
+
 .app-title {
 text-align: left;
 color: #777;
 }
  
 .add-user-title {
+left-margin: 20px;
 text-align: right;
 color: #777;
 }
@@ -35,12 +36,19 @@ color: #777;
 .login-form {
 text-align: center;
 }
+
 .control-group {
 margin-bottom: 10px;
 }
 
 .column-login {
   left-margin: 20px;
+}
+
+.login-form-scroll {
+  height:350px;
+  overflow-y: scroll;
+  margin: 60px 0;
 }
 
 table {

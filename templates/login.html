@@ -12,10 +12,10 @@
 
 {% if session['logged_in'] %}
 	<h5>You're logged in already!</h5>
-	<p><a href='/'>Click here</a> to go to your home page</p> 
+	<p><a href='/logout'>Click here</a> to logout and login with new username</p> 
+
 {% else %}
- 
- 
+
 <form action="/login" method="POST">
 	<div class="login">
 		<div class="login-screen">
@@ -47,20 +47,28 @@
 				</div>
  
                 <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block" >
-			    <br>
+			    
 			</div>
 
-			<div class="login-form">
-				<h3>Users login history</h3>
+			<div class="login-form-scroll">
+				<p><u>Login History:</u></p>
+				{% if error %}
+					<p class="error"><strong>Error:</strong> {{ error }}</p>
+				{% endif %}
+
+				{% for login in logins %}
+					{{ login }}
+					<br>
+				{% endfor %}
 			</div>
 		</div>
 	</div>
 </form>
 
 	<!-- errors -->
-	{% if error %}
+	<!-- {% if error %}
 	<p class="error"><strong>Error:</strong> {{ error }}</p>
-	{% endif %}
+	{% endif %} -->
  
 {% endif %}
 <!-- {% endblock %} -->
