@@ -1,14 +1,68 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Behavioral Logging</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
 
-<h1>Please login</h1>
-<br>
-<form action="" method="post">
-  <input type="text" placeholder="Username" name="username" value="{{
-    request.form.username }}">
-   <input type="password" placeholder="Password" name="password" value="{{
-    request.form.password }}">
-  <input class="btn btn-default" type="submit" value="Login">
+<link rel="stylesheet" href="/static/style.css" type="text/css">
+<!-- {% block body %} -->
+
+{% if session['logged_in'] %}
+	<h5>You're logged in already!</h5>
+	<p><a href='/'>Click here</a> to go to your home page</p> 
+{% else %}
+ 
+ 
+<form action="/login" method="POST">
+	<div class="login">
+		<div class="login-screen">
+			<table>
+				<tr>
+					<td>
+						<div class="app-title column-login">
+							<h1>Login</h1>
+						</div>
+					</td>
+					<td>
+						<div class="add-user-title column-login">
+							<h6>
+								<a href='/adduser'>Add User</a>
+							</h6>
+						</div>
+					</td>
+				</tr>
+  			</table>
+			<div class="login-form">
+				<div class="control-group">
+				<input type="text" class="login-field" value="" placeholder="username" name="username">
+				<label class="login-field-icon fui-user" for="login-name"></label>
+				</div>
+ 
+				<div class="control-group">
+				<input type="password" class="login-field" value="" placeholder="password" name="password">
+				<label class="login-field-icon fui-lock" for="login-pass"></label>
+				</div>
+ 
+                <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block" >
+			    <br>
+			</div>
+
+			<div class="login-form">
+				<h3>Users login history</h3>
+			</div>
+		</div>
+	</div>
 </form>
 
-{% endblock %}
+	<!-- errors -->
+	{% if error %}
+	<p class="error"><strong>Error:</strong> {{ error }}</p>
+	{% endif %}
+ 
+{% endif %}
+<!-- {% endblock %} -->
+</body>
+</html>

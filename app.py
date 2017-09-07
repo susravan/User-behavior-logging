@@ -1,10 +1,14 @@
 from flask import Flask, request, render_template, redirect,\
-url_for, session, flash
+url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from flask_cors import CORS
 import simplejson as json
 import sqlite3 as sql
+import datetime as dt
+import time
+import os
+
 
 app = Flask(__name__)
 CORS(app)
@@ -32,9 +36,75 @@ def login_required(f):
 @app.route('/') #Main URL
 @login_required
 def home():
-    # posts = db.session.query(BlogPost).all()
-    print "At homepage"
-    return render_template("index.html", posts=[])  # Reder a template
+    userDetails = []
+    
+    with sql.connect("UserTracking.db") as connection:
+        print "inside db connection"
+        c = connection.cursor()
+        c.execute('SELECT evt_type, pageHTML, evt_datetime FROM UserActions where userId = "dummy" and evt_datetime != "NaN" ')
+        userDetails = c.fetchall()
+    
+    posts = []
+    for info in userDetails:
+
+        post = info[0] + " --> " + info[1] + " --> " + info[2]
+        # print post
+        posts.append(post)
+
+    return render_template("index.html", posts=posts)
+
+
+# By default, flask assumes GET method
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    
+    if request.method == 'POST':
+        if request.form['username'] != "admin" or request.form['password'] != "admin":
+            error = "Invalid credentials. Please try again"
+        else:
+            loginStartTime = time.time()
+            print "curr time = ", str(loginStartTime)
+
+            session['logged_in'] = True
+            with sql.connect("UserTracking.db") as connection:
+                c = connection.cursor()
+                c.execute('SELECT * FROM UserActions where userId = "admin"')
+                loginInfo = c.fetchall()
+            
+            print "from login", request.form['username']
+            return redirect(url_for('home', userId=request.form['username']))
+
+    return render_template("login.html", error=error)
+
+
+@app.route('/adduser', methods=['GET', 'POST'])
+def adduser():
+    info = None
+    
+    # Post request
+    if request.method == 'POST':
+
+        if request.form['username'] == "" or request.form['password'] == "":
+            info = "Login credentials cannot be empty"
+        else:
+            loginStartTime = dt.datetime.now()
+            print str(loginStartTime)
+
+            # session['logged_in'] = True
+            with sql.connect("UserTracking.db") as connection:
+                c = connection.cursor()
+                c.execute('INSERT INTO UserDetails VALUES(?,?)', [request.form['username'], request.form['password']])
+                loginInfo = c.fetchall()
+            
+            info = "User created"
+            print info
+            print loginInfo
+        return render_template("adduser.html", info=info)
+    
+    # Get request
+    else:
+        return render_template("adduser.html")
 
 
 @app.route('/TrackingData', methods=["POST"])
@@ -42,7 +112,7 @@ def TrackingData():
     req_json = request.get_json()
     evtData = req_json['evtData']
     quesData = req_json['quesData']
-    print evtData
+    # print evtData
 
     with sql.connect("UserTracking.db") as connection:
         c = connection.cursor()
@@ -58,32 +128,14 @@ def TrackingData():
     return ""
 
 
-@app.route('/welcome') #Main URL
-def welcome():
-    return render_template("welcome.html")
 
-
-# By default, flask assumes GET method
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != "admin" or request.form['password'] != "admin":
-            error = "Invalid credentials. Please try again"
-        else:
-            session['logged_in'] = True
-            flash("You just logged in")
-            return redirect(url_for('home'))
-
-    return render_template("login.html", error=error)
 
 
 @app.route('/logout')
 @login_required
 def logout():
     session.pop('logged_in', None)
-    flash("You just logged out")
-    return redirect(url_for('welcome'))
+    return redirect(url_for('login'))
 
 
 if __name__ == '__main__':

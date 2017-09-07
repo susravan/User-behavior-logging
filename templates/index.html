@@ -1,17 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Welcome to Adaptive Web</h2>
-<br>
-<p>Click <a href="/logout">here</a> to logout.</p>
-<br><br>
-
-<h3>Posts:</h3>
-
-{% for post in posts %}
-	<strong>Title:</strong>{{ post.title }} <br>
-	<strong>Post:</strong>{{ post.description }} <br>
+	<p>
+		StackOverflow link - 
+		<a href="https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15">stackoverflow tag=java</a>
+	</p>
+	<table>
+		<tr>
+			<td>
+				<h2>Your activity History</h2>
+			</td>
+			<td>
+				<a href="/adduser">Add User</a>
+			</td>
+			<td>
+				<a href="/logout">Logout</a>
+			</td>
+		</tr>
+	</table>
+	
 	<br>
-{% endfor %}
+	<div>
+		{% for post in posts %}
+			{{ post }}
+			<br>
+		{% endfor %}
+	</div>
 
 {% endblock %}

@@ -1,45 +1,36 @@
 
-// Get number of votes, answers and views for each question
-var question_summary = $(".question-summary")
-var question_stats_arr = []
-
-// Get to know clearly about the html parsering using javascript
-
-for (var i=0; i < question_summary.length-13; i++) {
-	question_stats = {
-		"object_id": question_summary.get(i).id.split('-')[2],
-		"votes": question_summary[i].getElementsByClassName("vote-count-post")[0].childNodes[0].innerHTML,
-		"answers": question_summary[i].getElementsByClassName("status answered-accepted")[0].childNodes[1].innerHTML,
-		"views": question_summary[i].getElementsByClassName("views supernova")[0].innerHTML.trim().split(' ')[0]
-	};
-	question_stats_arr.push(question_stats);
-}
-
-
 // Logging time spent on a page
 $(document).ready(function() {
-  	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";
 
-  	var start = new Date().getTime();
+  	var start;
   	var end;
+  	var time_spent;
 
-    $(window).on('unload', function() {
-        end = new Date().getTime();
-    });
+  	window.addEventListener('focus', function() {
+  		start = Date.now();
+  	});
+	
+	console.log("start = ", start)
+	
+	$(window).on('blur', function() {
+  		end = new Date().getTime();
+  	});
 
-	var time_spent = parseInt(end - start)
-	console.log(time_spent)
+	console.log("end = ", end);
+
+	time_spent = end - start;
+	console.log(time_spent/1000)
 
     var evtData = {
 		"userId": user_id,
 		"evt_type": "Time Spent",
 		"pageHTML": document.URL,
 		"object_id": 0,
-		"evt_datetime": time_spent
+		"evt_datetime": (time_spent/1000).toString()
 	};
 	
-	console.log(evtData);
+	// console.log(evtData);
 
 	// Sending data to background.js
 	chrome.runtime.sendMessage({'evtData': evtData, 'quesData': null}, function(response) {
@@ -52,25 +43,17 @@ $(document).ready(function() {
 $(document).ready(function(evt) {
 	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";
-
-	// console.log($(".subheader.answers-subheader"));
-	// console.log($(".subheader.answers-subheader")[0]);
-	// console.log($(".subheader.answers-subheader")[0].childNodes);
-	// console.log($(".subheader.answers-subheader")[0].childNodes[1]);
-	// console.log($(".subheader.answers-subheader")[0].childNodes[1].childNodes[1].innerHTML);
-
-	// console.log($(".subheader.answers-subheader"));
-	// console.log($(".subheader.answers-subheader").eq(0));
-	// console.log($(".subheader.answers-subheader").eq(0).children('h2').eq(0).children('span').eq(0));
-	// console.log($(".subheader.answers-subheader")[0].childNodes[1]);
-	// console.log($(".subheader.answers-subheader")[0].childNodes[1].childNodes[1].innerHTML);
+	
+	var today = new Date();
+	var date = (today.getMonth() + 1) + '-' + (today.getDate()) + '-' + today.getFullYear();
+	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
 	var evtData = {
 		"userId": user_id,
-		"evt_type": "Visit",
+		"evt_type": "Visited",
 		"pageHTML": document.URL,
 		"object_id": ques_id,
-		"evt_datetime": Date.now()
+		"evt_datetime": date + ' ' + time
 	};
 
 	var tagListChildren = document.getElementsByClassName("post-taglist")[0].children;
@@ -105,17 +88,20 @@ $(document).ready(function(evt) {
 
 // Post answer tracking
 $('#submit-button').on('click', function() {
-	setTimeout(function() {}, 500);
 
 	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";
 
+	var today = new Date();
+	var date = (today.getMonth() + 1) + '-' + (today.getDate()) + '-' + today.getFullYear();
+	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
 	var evtData = {
 		"userId": user_id,
-		"evt_type": "Post Answer",
+		"evt_type": "Posted Answer to",
 		"pageHTML": document.URL,
 		"object_id": ques_id,
-		"evt_datetime": Date.now()
+		"evt_datetime": date + ' ' + time
 	};
 
 	var tagListChildren = document.getElementsByClassName("post-taglist")[0].children;
@@ -169,12 +155,16 @@ $('.short-link').eq(0).on('click', function() {
 	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";
 
+	var today = new Date();
+	var date = (today.getMonth() + 1) + '-' + (today.getDate()) + '-' + today.getFullYear();
+	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
 	var evtData = {
 		"userId": user_id,
-		"evt_type": "Share Question",
+		"evt_type": "Shared Question",
 		"pageHTML": document.URL,
 		"object_id": ques_id,
-		"evt_datetime": Date.now()
+		"evt_datetime": date + ' ' + time
 	};
 
 	// Question details
@@ -212,13 +202,18 @@ $(".vote-up-off").on('click', function() {
 	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";
 
+	var today = new Date();
+	var date = (today.getMonth() + 1) + '-' + (today.getDate()) + '-' + today.getFullYear();
+	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
 	var evtData = {
 		"userId": user_id,
-		"evt_type": "UpVote",
+		"evt_type": "UpVoted",
 		"pageHTML": document.URL,
 		"object_id": this.previousElementSibling.getAttribute('value'),
-		"evt_datetime": Date.now()
+		"evt_datetime": date + ' ' + time
 	};
+
 	console.log(evtData);
 	// Sending data to background.js
 	chrome.runtime.sendMessage({'evtData': evtData, 'quesData': null}, function(response) {
@@ -232,13 +227,18 @@ $(".vote-down-off").on('click', function() {
 	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";
 
+	var today = new Date();
+	var date = (today.getMonth() + 1) + '-' + (today.getDate()) + '-' + today.getFullYear();
+	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
 	var evtData = {
 		"userId": user_id,
-		"evt_type": "DownVote",
+		"evt_type": "DownVoted",
 		"pageHTML": document.URL,
 		"object_id": this.previousElementSibling.previousElementSibling.previousElementSibling.getAttribute('value'),
-		"evt_datetime": Date.now()
+		"evt_datetime": date + ' ' + time
 	};
+	
 	console.log(evtData);
 	// Sending data to background.js
 	chrome.runtime.sendMessage({'evtData': evtData, 'quesData': null}, function(response) {
