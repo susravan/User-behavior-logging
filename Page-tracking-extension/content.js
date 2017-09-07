@@ -1,40 +1,40 @@
 
-// Logging time spent on a page
-$(document).ready(function() {
-	var user_id = "dummy";
+// // Logging time spent on a page
+// $(document).ready(function() {
+// 	var user_id = "dummy";
 
-  	var start;
-  	var end;
-  	var time_spent;
+//   	var start;
+//   	var end;
+//   	var time_spent;
 
-	// $(window).on('focus', function() {
-	start = Date.now();
-	// });
-	console.log("start = ", start)
+// 	$(window).on('focus', function() {
+// 		start = Date.now();
+// 	});
+// 	console.log("start = ", start)
 
-	$(window).on('blur', function() {
-  		end = Date.now();
-  		console.log("end = ", end);
-  		time_spent = (end - start)/1000;
-  		console.log("time_spent = ", time_spent);
+// 	$(window).on('blur', function() {
+//   		end = Date.now();
+//   		console.log("end = ", end);
+//   		time_spent = (end - start)/1000;
+//   		console.log("time_spent = ", time_spent);
 
-  		var evtData = {
-			"userId": user_id,
-			"evt_type": "Time Spent",
-			"pageHTML": document.URL,
-			"object_id": 0,
-			"evt_datetime": time_spent,
-			"evt_timestamp": Date.now()
-		};
-		console.log(evtData);
+//   		var evtData = {
+// 			"userId": user_id,
+// 			"evt_type": "Time Spent",
+// 			"pageHTML": document.URL,
+// 			"object_id": 0,
+// 			"evt_datetime": time_spent,
+// 			"evt_timestamp": Date.now()
+// 		};
+// 		console.log(evtData);
 
 
-		// Sending data to background.js
-		chrome.runtime.sendMessage({'evtData': evtData, 'quesData': null}, function(response) {
-		  // console.log(response.BgResponse);
-		});
-	});
-});
+// 		// Sending data to background.js
+// 		chrome.runtime.sendMessage({'evtData': evtData, 'quesData': null}, function(response) {
+// 		  // console.log(response.BgResponse);
+// 		});
+// 	});
+// });
 
 
 

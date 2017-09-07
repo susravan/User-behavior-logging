@@ -50,7 +50,7 @@ def home():
         post = info[0] + " --> " + info[1] + " --> " + info[2]
         posts.append(post)
 
-    return render_template("index.html", posts=posts)
+    return render_template("index.html", posts=posts, userId=username)
 
 
 # By default, flask assumes GET method

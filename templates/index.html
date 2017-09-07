@@ -2,13 +2,22 @@
 {% block content %}
 
 	<p>
-		StackOverflow link - 
+		--> StackOverflow link - 
 		<a href="https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15">stackoverflow tag=java</a>
+	</p>
+	<p><u>Following actions are tracked in the current application.</u><br>
+	1) <i>Visited</i> - Tracks all the user visited question pages. This gives us the idea on the type of questions user interested in. From the votes, number of answers of the visited question gives us the insight into the taste of user<br>
+	2) <i>Upvoted/ Downvoted</i> - Can also be used for user's reading preferences on length of material, language and complexity level. Since this is explicit, chances of data being high accuracy<br>
+	3) <i>Shared</i> - User's high interest areas/ topics can be discovered by his sharing history<br>
+	4) <i>Asked Question</i> - Helps to find the "current focus area" of the user and also the area in which he hopes to improve<br>
+	5) <i>Posted Answer</i> - Can be used to find out the level of expertise of user on different topics based on his answer
+	s popularity<br>
+	<!-- 6) <i>Time Spent</i> - Time spent on each page combined with average viewing times can be a good factor in deducing the expertise level of the user on that particular subject -->
 	</p>
 	<table>
 		<tr>
 			<td>
-				<h2>Your activity History</h2>
+				<h5><i>Hello <strong>{{ userId }}</strong>, below is your activity recently</i></h5>
 			</td>
 			<td>
 				<a href="/adduser">Add User</a>
