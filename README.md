@@ -1,14 +1,14 @@
-# Problem:
-Choose a website and adapt it based on the user behaviour on the site. Once the adaptation is done, users with different interests will see different layout of the website.
+# Problem Statement:
+Adapt a webpage based on the user behaviour on that page. Once the adaptation is done, users with different interests will have to see different layout of the website.
 
 # Approach:
-**Step 1:** Develop a method to track and log user's activity on a given webpage
+**Step 1:** Develop a method to track and log user's activity on a given webpage - *Completed*
 
-**Step 2:** Analyze the behavior log activity and adapt the website
+**Step 2:** Analyze the behavior log activity and adapt the website - *In the process*
 
 ## Step 1:
 ### Implementation Details:
-In order to track the user's activity among multiple websites, I created a browser extension which contains the event listeners on required DOM elements in the page. This extension tracks the activity on the elements and return the data in JSON format.
+In order to track the user's activity among multiple websites, I have created a browser extension which contains the event listeners on required DOM elements in the page. This extension tracks the activity on the elements and return the data in JSON format.
 
 Implemented a flask server and SQLite3 database for backend. Once the data is collected, it is sent to server by an AJAX call. Server stored it in SQL tables. Also created a web based login system where a user can login and review his/ her own activity.
 
