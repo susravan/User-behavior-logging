@@ -5,7 +5,7 @@ from functools import wraps
 from flask_cors import CORS
 import simplejson as json
 import sqlite3 as sql
-import datetime
+from datetime import datetime,timedelta
 import time
 import os
 import flask_login
@@ -50,28 +50,90 @@ def home():
         post = info[0] + " --> " + info[1] + " --> " + info[2]
         posts.append(post)
 
-    # Written only to print the values - for debug purposes only
-    with sql.connect("UserTracking.db") as connection:
+    DateRange = [["-7 days","-1 second"],["-14 days", "-7 days"],["-21 days", "-14 days"],["-28 days", "-21 days"]]
+    
+    BarChartData = []
+    for start, end in DateRange:
+        tempDict = getDateRange("UserTracking.db", start, end)
+        DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
+        
+        BarData = [{"DateAxes": DateAxes}]
+        
+        for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
+            BarData[0][action] = getBarGraphTimeData("UserTracking.db", start, end, action)[0]["Percent"]
+        
+        BarChartData.extend(BarData)
+    print BarChartData
+    
+    return render_template("index.html", posts=posts, userId=username)
+
+
+# Endpoint to get chart data
+@app.route('/barchartdata', methods=['GET'])
+def barchartdata():
+    DateRange = [["-7 days","-1 second"],["-14 days", "-7 days"],["-21 days", "-14 days"],["-28 days", "-21 days"]]
+    
+    BarChartData = []
+    for start, end in DateRange:
+        tempDict = getDateRange("UserTracking.db", start, end)
+        DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
+        
+        BarData = [{"DateAxes": DateAxes}]
+        
+        for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
+            BarData[0][action] = getBarGraphTimeData("UserTracking.db", start, end, action)[0]["Percent"]
+        
+        BarChartData.extend(BarData)
+    
+    print BarChartData
+
+    return jsonify(BarChartData)
+
+
+# Returns the bar chart data with StartDate, EndDate and percentage of total actions
+def getBarGraphTimeData(DBName, StartDate, EndDate, Event):
+    with sql.connect(DBName) as connection:
         conn = connection.cursor()
-        conn.execute('select tag, count(tag) as count FROM \
+        conn.execute("SELECT (STRFTIME('%m/%d', DATETIME('now', ?))) as StartDate,  STRFTIME('%m/%d', DATETIME('now', ?)) as EndDate, \
             ( \
-                select distinct userId, evt_type, SUBSTR(tags, 0, instr(tags,"^")) AS tag , tmStamp from  \
-                ( \
-                    select * from useractions \
-                    where userId = ? and evt_type = ? \
-                ) ua \
-                inner join ObjectDetails ob \
-                on ua.object_id = ob.object_id \
-            ) t \
-            group by tag', [username, "Visited"])
+                    ( \
+                        SELECT COUNT(evt_type) FROM UserActions \
+                        WHERE evt_type = ? AND userId = ? \
+                        AND tmStamp >= STRFTIME('%s', DATETIME('now', ?))*1000 \
+                        AND tmStamp < STRFTIME('%s', DATETIME('now', ?))*1000 \
+                    ) \
+                        / \
+                    ( \
+                        ( \
+                            SELECT COUNT(evt_type) FROM UserActions \
+                            WHERE evt_type = ? \
+                            AND tmStamp >= STRFTIME('%s', DATETIME('now',?))*1000 \
+                            AND tmStamp < STRFTIME('%s', DATETIME('now',?))*1000 \
+                        ) /100.0 \
+                    ) \
+            ) \
+        AS Percent", [StartDate, EndDate, Event, "aaa", StartDate, EndDate, Event, StartDate, EndDate])
         
         chart_data = [dict((conn.description[i][0], value) \
             for i, value in enumerate(row)) for row in conn.fetchall()]
-          
-        print "chart_data = ", chart_data
+        # print "chart_data = ", chart_data
+        return chart_data
+        # print "chart_data = ", chart_data
         conn.close()
 
-    return render_template("index.html", posts=posts, userId=username)
+# Returns the start and end dates
+def getDateRange(DBName, StartDate, EndDate):
+    with sql.connect(DBName) as connection:
+        conn = connection.cursor()
+        conn.execute("SELECT STRFTIME('%m/%d', DATETIME('now', ?)) as StartDate, \
+                            STRFTIME('%m/%d', DATETIME('now', ?)) as EndDate", [StartDate, EndDate])
+        
+        time_data = [dict((conn.description[i][0], value) \
+            for i, value in enumerate(row)) for row in conn.fetchall()]
+
+        conn.close()
+        return time_data
+
 
 # Endpoint to get chart data
 @app.route('/chartdata', methods=['GET'])
@@ -105,7 +167,7 @@ def get_tag_data():
         chart_data = [dict((conn.description[i][0], value) \
             for i, value in enumerate(row)) for row in conn.fetchall()]
           
-        print "chart_data = ", chart_data
+        # print "chart_data = ", chart_data
         conn.close()
         return chart_data
 
@@ -141,7 +203,7 @@ def login():
                 login = loginHis[0] + " --> " + loginHis[1]
                 logins.append(login)
 
-            print logins
+            # print logins
             return render_template("login.html", error=error, logins=logins)
     
     with sql.connect("UserTracking.db") as connection:

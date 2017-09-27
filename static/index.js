@@ -1,3 +1,5 @@
+
+// Draw pie chart
 $(document).ready(function() {
 
     var width = 360;
@@ -134,4 +136,10 @@ $(document).ready(function() {
         .attr('y', legendRectSize - legendSpacing)
         .text(function(d) { return d; });
     });
+});
+
+
+// Draw social bar chart
+$(document).ready(function() {
+    
 });
