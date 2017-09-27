@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sqliteToJson accepts SQL with a callback 1`] = `
+Array [
+  Object {
+    "name": "Washington",
+  },
+  Object {
+    "name": "Adams",
+  },
+  Object {
+    "name": "Jefferson",
+  },
+  Object {
+    "name": "Madison",
+  },
+  Object {
+    "name": "Monroe",
+  },
+  Object {
+    "name": "Adams",
+  },
+]
+`;
+
+exports[`sqliteToJson accepts a key option 1`] = `
+Object {
+  "Adams": Object {
+    "id": 6,
+    "name": "Adams",
+  },
+  "Jefferson": Object {
+    "id": 3,
+    "name": "Jefferson",
+  },
+  "Madison": Object {
+    "id": 4,
+    "name": "Madison",
+  },
+  "Monroe": Object {
+    "id": 5,
+    "name": "Monroe",
+  },
+  "Washington": Object {
+    "id": 1,
+    "name": "Washington",
+  },
+}
+`;
+
+exports[`sqliteToJson accepts where, key, columns simultaneously 1`] = `
+Object {
+  "Washington": Object {
+    "name": "Washington",
+  },
+}
+`;
+
+exports[`sqliteToJson attaches a key to the output 1`] = `
+Object {
+  "Adams": Object {
+    "id": 6,
+    "name": "Adams",
+  },
+  "Jefferson": Object {
+    "id": 3,
+    "name": "Jefferson",
+  },
+  "Madison": Object {
+    "id": 4,
+    "name": "Madison",
+  },
+  "Monroe": Object {
+    "id": 5,
+    "name": "Monroe",
+  },
+  "Washington": Object {
+    "id": 1,
+    "name": "Washington",
+  },
+}
+`;
+
+exports[`sqliteToJson exports a table to JSON 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Washington",
+  },
+  Object {
+    "id": 2,
+    "name": "Adams",
+  },
+  Object {
+    "id": 3,
+    "name": "Jefferson",
+  },
+  Object {
+    "id": 4,
+    "name": "Madison",
+  },
+  Object {
+    "id": 5,
+    "name": "Monroe",
+  },
+  Object {
+    "id": 6,
+    "name": "Adams",
+  },
+]
+`;
+
+exports[`sqliteToJson filters with a columns option 1`] = `
+Array [
+  Object {
+    "name": "Washington",
+  },
+  Object {
+    "name": "Adams",
+  },
+  Object {
+    "name": "Jefferson",
+  },
+  Object {
+    "name": "Madison",
+  },
+  Object {
+    "name": "Monroe",
+  },
+  Object {
+    "name": "Adams",
+  },
+]
+`;
+
+exports[`sqliteToJson filters with a where option 1`] = `"[{\\"name\\":\\"Adams\\",\\"id\\":2},{\\"name\\":\\"Adams\\",\\"id\\":6}]"`;
+
+exports[`sqliteToJson saves a table in a database to a file 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Washington",
+  },
+  Object {
+    "id": 2,
+    "name": "Adams",
+  },
+  Object {
+    "id": 3,
+    "name": "Jefferson",
+  },
+  Object {
+    "id": 4,
+    "name": "Madison",
+  },
+  Object {
+    "id": 5,
+    "name": "Monroe",
+  },
+  Object {
+    "id": 6,
+    "name": "Adams",
+  },
+]
+`;

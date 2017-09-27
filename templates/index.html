@@ -1,18 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
-
+	<link rel="stylesheet" href="static/normalize.css">
 	<p>
 		--> StackOverflow link - 
 		<a href="https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15">stackoverflow tag=java</a>
 	</p>
-	<p><u>Following actions are tracked in the current application.</u><br>
+	
+	<form>
+	    <label><input type="radio" name="dataset" id="dataset" value="total" checked> Total</label>
+	    <label><input type="radio" name="dataset" id="dataset" value="option1"> Option 1</label>
+	    <label><input type="radio" name="dataset" id="dataset" value="option2"> Option 2</label>
+	</form>
+
+	<div id="chart">
+	</div><br>
+	<h1>Your visited count</h1>
+
+	<div id="barchart">
+	</div><br>
+	<h1>Open User Chart</h1>
+
+	<script src={{ url_for('static', filename='jquery-3.2.1.min.js') }}></script>
+	<script src={{ url_for('static', filename='d3.min.js') }}></script>
+	<script src={{ url_for('static', filename='index.js') }}></script>
+	<script src="static/d3.min.js"></script>
+
+{% endblock %}
+
+<!--<p><u>Following actions are tracked in the current application.</u><br>
 	1) <i>Visited</i> - Tracks all the user visited question pages. This gives us the idea on the type of questions user interested in. From the votes, number of answers of the visited question gives us the insight into the taste of user<br>
 	2) <i>Upvoted/ Downvoted</i> - Can also be used for user's reading preferences on length of material, language and complexity level. Since this is explicit, chances of data being high accuracy<br>
 	3) <i>Shared</i> - User's high interest areas/ topics can be discovered by his sharing history<br>
 	4) <i>Asked Question</i> - Helps to find the "current focus area" of the user and also the area in which he hopes to improve<br>
 	5) <i>Posted Answer</i> - Can be used to find out the level of expertise of user on different topics based on his answer
 	s popularity<br>
-	<!-- 6) <i>Time Spent</i> - Time spent on each page combined with average viewing times can be a good factor in deducing the expertise level of the user on that particular subject -->
 	</p>
 	<table>
 		<tr>
@@ -35,5 +56,6 @@
 			<br>
 		{% endfor %}
 	</div>
-
-{% endblock %}
+	
+	
+	-->
