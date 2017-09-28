@@ -3,16 +3,24 @@
 	<link rel="stylesheet" href="static/normalize.css">
 	<link rel="shortcut icon" href="">
 	
+	<style>
+		input[type=radio] {
+		    border: 0px;
+		    width: 10%;
+		    height: 1em;
+		}
+	</style>
+
 	<p>
 		--> StackOverflow link - 
 		<a href="https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15">stackoverflow tag=java</a>
 	</p>
 	
 
-	<table>
+	<table class="table">
 		<tr>
 			<td>
-				<h5><i>Hello <strong>{{ userId }}</strong>, below is your activity recently</i></h5>
+				<h5><i>Hello <strong>{{ userId }}</strong>, below is the visualization of your activity recently</i></h5>
 			</td>
 			<td>
 				<a href="/adduser">Add User</a>
@@ -24,43 +32,78 @@
 	</table>
 	<br>
 	<div class='container'>
-		<h1>Relative frequency of tags among questions asked by <b>{{ userId }}</b></h1>
-		<table>
-			<tr>
-				<td>
-					<div id="chart"> </div>
-				</td>
-				<td></td>
-				<td>
-					<div id="chart2"> </div>
-					
-				</td>
-			</tr>
-			<tr>
-				<p> Description of the chart</p>
-			</tr>
+		<!-- <h1>Relative frequency of tags among questions asked by <b>{{ userId }}</b></h1> -->
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						<h4><b>Topics that the user is interested to learn</b></h4>
+					</th>
+					<th>
+						<h4><b>Topics in which the user is proficient in</b></h4>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<div id="chart"> </div>
+					</td>
+					<td>
+						<div id="chart2"> </div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<p>This chart illustrates the user's <b>asked questions</b> grouped by their<br>
+							topic. This gives us the insight about the user's learnings. If the  <br>
+							user looks for <i>Java</i> questions, we can infer that the user is <br>
+							interested in that topic and thus recommened topics based on this data
+						</p>
+					</td>
+					<td>
+						<p>This chart illustrates the user's <b>answered questions</b> grouped by their<br>
+							topic. This gives us the insight about the user's skills. If the user<br>
+							posts answers related to <i>C#</i>, we can infer that he is skilled in that<br>
+							area and recommend the unanswered questions to him for answering.
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<div>
+						<p><b>Note:</b> Below are the three interactions implemented in this webpage<br>
+						1) <b><i>MouseHover</i></b>: Implemented tooltip to display the chart by hovering on the chart<br>
+						2) <b><i>Adjusting Scales</i></b>: In the pie chart, you can remove unwanted topics by clicking on the legend provided at the center of the circle. This feature helps in understanding of relative topic dominance<br>
+						3) <b><i>Radio buttons</i></b>: Implemented radio buttons to display the action count results individually<br>
+						</p>
+					</div>
+				</tr>
+			</tbody>
+
 		</table>
 		
 		<br><br>
-		
-		<div>
+	</div>
+
+	<div class="container">
+			
+			<h3><b><u>Social visualization of user's actions</u></b></h3>
 			<form>
-			    <label><input type="radio" name="dataset" id="dataset" value="Visits" checked> Visits</label><br>
-			    <label><input type="radio" name="dataset" id="dataset" value="UpVotes"> UpVotes</label><br>
-			    <label><input type="radio" name="dataset" id="dataset" value="DownVotes"> DownVotes</label><br>
+				<input type="radio" name="dataset" id="dataset" value="Visits" checked onclick="change(this.value)"/> <label for="dataset">Visits</label><br>
+			    <input type="radio" name="dataset" id="dataset" value="UpVotes" onclick="change(this.value)"/><label for="dataset">UpVotes</label>
+			    <br>
+			    <input type="radio" name="dataset" id="dataset" value="DownVotes" onclick="change(this.value)"/><label for="dataset">DownVotes</label>
+			    <br>
 			</form>
 			<div id="barchart"> </div>
-		</div>
+			<p>This chart illustrates the percentage of actions done by the user among all user action count in the last two months on weekly basis.<br> From this chart we an infer two things: <br>
+				1) How active is the user among his peers <br>
+				2) His most common actions in the website from which we can infer his level of interest <br>
+			</p>
+	</div>
 		
 
 </div>
-	
-	<!-- <h1>Your visited count</h1> -->
-	<div id="barChartDiv" class='container'>
-		
-	</div>
-	<!-- <h1>Open User Chart</h1> -->
-
 	<script src={{ url_for('static', filename='jquery-3.2.1.min.js') }}></script>
 	<script src={{ url_for('static', filename='d3.min.js') }}></script>
 	<script src={{ url_for('static', filename='index.js') }}></script>

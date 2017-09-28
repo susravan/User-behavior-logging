@@ -88,14 +88,15 @@ def barchartdataUpVote():
         DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
         
         BarData = [{'Index':1, "DateAxes": DateAxes}]
+        percent = getBarGraphTimeData("UserTracking.db", start, end, "UpVoted")[0]["Percent"]
         
-        # for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
-        BarData[0]["percent"] = getBarGraphTimeData("UserTracking.db", start, end, "UpVoted")[0]["Percent"]
-        
+        if percent == None:
+            BarData[0]["percent"] = 0.5
+        else:
+            BarData[0]["percent"] = percent
+
         BarChartData.extend(BarData)
     
-    # print BarChartData
-
     return jsonify(BarChartData)
 
 # Endpoint to get chart data
@@ -109,14 +110,15 @@ def barchartdataDownVote():
         DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
         
         BarData = [{'Index':1, "DateAxes": DateAxes}]
+        percent = getBarGraphTimeData("UserTracking.db", start, end, "DownVoted")[0]["Percent"]
         
-        # for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
-        BarData[0]["percent"] = getBarGraphTimeData("UserTracking.db", start, end, "DownVoted")[0]["Percent"]
-        
+        if percent == None:
+            BarData[0]["percent"] = 0.5
+        else:
+            BarData[0]["percent"] = percent
+
         BarChartData.extend(BarData)
     
-    # print BarChartData
-
     return jsonify(BarChartData)
 
 
@@ -142,13 +144,11 @@ def getBarGraphTimeData(DBName, StartDate, EndDate, Event):
                         ) /100.0 \
                     ) \
             ) \
-        AS Percent", [StartDate, EndDate, Event, "aaa", StartDate, EndDate, Event, StartDate, EndDate])
+        AS Percent", [StartDate, EndDate, Event, entered_UserId, StartDate, EndDate, Event, StartDate, EndDate])
         
         chart_data = [dict((conn.description[i][0], value) \
             for i, value in enumerate(row)) for row in conn.fetchall()]
-        # print "chart_data = ", chart_data
         return chart_data
-        # print "chart_data = ", chart_data
         conn.close()
 
 # Returns the start and end dates
@@ -178,7 +178,9 @@ def chartdataPA():
 def get_tag_dataQA():
     with sql.connect("UserTracking.db") as connection:
         conn = connection.cursor()
-        conn.execute('select tag as label, count(tag) as count FROM \
+        conn.execute('select label, count from \
+            ( \
+                select tag as label, count(tag) as count FROM \
             ( \
                 select distinct userId, evt_type, SUBSTR(tags, 0, instr(tags,"^")) AS tag , tmStamp from  \
                 ( \
@@ -189,6 +191,8 @@ def get_tag_dataQA():
                 on ua.object_id = ob.object_id \
             ) t \
             group by tag \
+            ) \
+            order by count desc \
             LIMIT 5', ["Visited", entered_UserId])
 
         chart_data = [dict((conn.description[i][0], value) \
@@ -217,8 +221,8 @@ def get_tag_dataPA():
 
         chart_data = [dict((conn.description[i][0], value) \
             for i, value in enumerate(row)) for row in conn.fetchall()]
-          
-        # print "chart_data = ", chart_data
+        print conn.fetchall()
+        print "chart_data from PA = ", chart_data
         conn.close()
         return chart_data
 

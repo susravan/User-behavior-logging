@@ -112,7 +112,7 @@ $(document).ready(function() {
           .attr('x', legendRectSize + legendSpacing)
           .attr('y', legendRectSize - legendSpacing)
           .text(function(d) { return d; })
-          
+
     });
 });
 
@@ -128,8 +128,9 @@ $(document).ready(function() {
     var legendSpacing = 4;
 
     var color = d3.scaleOrdinal(d3.schemeCategory10);
+    var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
-    var svg = d3.select('#chart')
+    var svg = d3.select('#chart2')
       .append('svg')
       .attr('width', width)
       .attr('height', height)
@@ -143,20 +144,7 @@ $(document).ready(function() {
 
     var pie = d3.pie()
       .value(function(d) { return d.count; })
-      .sort(null);
-
-    var tooltip = d3.select('#chart2')
-      .append('div')
-      .attr('class', 'tooltip');
-
-    tooltip.append('div')
-      .attr('class', 'label');
-
-    tooltip.append('div')
-      .attr('class', 'count');
-
-    tooltip.append('div')
-      .attr('class', 'percent');                
+      .sort(null);             
 
     // Loading a file or getting data from an endpoint is an asynchronous operation, 
     // so we keep entire code dependent on it inside the a callback
@@ -166,8 +154,9 @@ $(document).ready(function() {
       data.forEach(function(d) {
         d.enabled = true;
       })
+      console.log(data);
 
-      var path = svg.selectAll('path')
+    var path = svg.selectAll('path')
         .data(pie(data))
         .enter()
         .append('path')
@@ -175,28 +164,17 @@ $(document).ready(function() {
         .attr('fill', function(d, i) {
           return color(d.data.label);
         })                                                        
-        .each(function(d) { this._current = d; });               
+        .each(function(d) { this._current = d; })
+        .on("mousemove", function(d){
+              tooltip
+                .style("left", d3.event.pageX - 50 + "px")
+                .style("top", d3.event.pageY - 70 + "px")
+                .style("display", "inline-block")
+                .html(function() { return d.data.label + ", " + d.data.count
+                });
+          })
+          .on("mouseout", function(d){ tooltip.style("display", "none");});            
 
-      path.on('mouseover', function(d) {
-        var total = d3.sum(data.map(function(d) {
-          return (d.enabled) ? d.count : 0;                       
-        }));
-        var percent = Math.round(1000 * d.data.count / total) / 10;
-        tooltip.select('.label').html(d.data.label);
-        tooltip.select('.count').html(d.data.count);
-        tooltip.select('.percent').html(percent + '%');
-        tooltip.style('display', 'block');
-      });
-
-      path.on('mouseout', function() {
-        tooltip.style('display', 'none');
-      });
-
-
-      path.on('mousemove', function(d) {
-        tooltip.style('top', (d3.event.layerY + 10) + 'px')
-          .style('left', (d3.event.layerX + 10) + 'px');
-      });
 
       var legend = svg.selectAll('.legend')
         .data(color.domain())
@@ -260,6 +238,93 @@ $(document).ready(function() {
 
 // Draw social bar chart
 $(document).ready(function() {
+    DrawBarChart();
+    // var color = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499"]
+    // // set the dimensions and margins of the graph
+    // var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    //     width = 960 - margin.left - margin.right,
+    //     height = 500 - margin.top - margin.bottom;
+
+    // // set the ranges
+    // var x = d3.scaleBand()
+    //           .range([0, width])
+    //           .padding(0.1);
+    // var y = d3.scaleLinear()
+    //           .range([height, 0]);
+    
+    // var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
+    // // append the svg object to the body of the page
+    // // append a 'group' element to 'svg'
+    // // moves the 'group' element to the top left margin
+    // var svg = d3.select("body").append("svg")
+    //     .attr("width", width + margin.left + margin.right)
+    //     .attr("height", height + margin.top + margin.bottom)
+    //     .append("g")
+    //     .attr("transform", 
+    //           "translate(" + margin.left + "," + margin.top + ")");
+
+    // OptionVal = d3.select('input[name="dataset"]:checked').node().value
+    // // console.log("OptionVal = ", OptionVal);
+
+    // if(OptionVal === "Visits") {
+    //   // get the data
+    //   d3.json("barchartdataVisit", function(error, data) {
+    //     // if (error) throw error;
+    //     data.sort(function(a, b) {
+    //       if (a.Index > b.Index) {
+    //           return -1;
+    //       } else {
+    //           return 1;
+    //       }
+    //     });
+        
+    //     // Scale the range of the data in the domains
+    //     x.domain(data.map(function(d) { return d.DateAxes; }));
+    //     y.domain([0, d3.max(data, function(d) { return d.percent; }) + 15]);
+    //     // y.domain([0, 100]);
+
+    //     // append the rectangles for the bar chart
+    //     svg.selectAll(".bar")
+    //         .data(data)
+    //         .enter().append("rect")
+    //         .attr("class", "bar")
+    //         .attr("x", function(d) { return x(d.DateAxes); })
+    //         .attr("width", x.bandwidth())
+    //         .attr("y", function(d) { return y(d.percent); })
+    //         .attr("height", function(d) { return height - y(d.percent); })
+    //         .on("mousemove", function(d){
+    //           tooltip
+    //             .style("left", d3.event.pageX - 50 + "px")
+    //             .style("top", d3.event.pageY - 70 + "px")
+    //             .style("display", "inline-block")
+    //             .html(function() {
+    //               val = d.percent;
+    //               if(val < 1)
+    //                 return 0 + "%";
+    //               else
+    //                 return (d.percent).toPrecision(4) + "%"
+    //             });
+    //       })
+    //       .on("mouseout", function(d){ tooltip.style("display", "none");});
+
+    //     // add the x Axis
+    //     svg.append("g")
+    //         .attr("transform", "translate(0," + height + ")")
+    //         .call(d3.axisBottom(x));
+
+    //     // add the y Axis
+    //     svg.append("g")
+    //         .call(d3.axisLeft(y));
+    //   });
+    // }
+});
+
+function change(action) {
+    DrawBarChart();
+}
+
+function DrawBarChart() {
     var color = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499"]
     // set the dimensions and margins of the graph
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -278,10 +343,16 @@ $(document).ready(function() {
     // append the svg object to the body of the page
     // append a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
-    var svg = d3.select("body").append("svg")
+    console.log("removeing the svg tag")
+    console.log(d3.select("#barchart").select("svg"));
+    d3.select("#barchart_svg").remove();
+    
+
+    console.log($('#barchart'));
+    var svg = d3.select("#barchart").append("svg").attr("id", "barchart_svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+        .append("g")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
 
@@ -299,7 +370,8 @@ $(document).ready(function() {
               return 1;
           }
         });
-      // Scale the range of the data in the domains
+      
+        // Scale the range of the data in the domains
         x.domain(data.map(function(d) { return d.DateAxes; }));
         y.domain([0, d3.max(data, function(d) { return d.percent; }) + 15]);
         // y.domain([0, 100]);
@@ -338,5 +410,107 @@ $(document).ready(function() {
             .call(d3.axisLeft(y));
       });
     }
-});
+    else if(OptionVal === "UpVotes") {
+      // get the data
+      d3.json("barchartdataUpVote", function(error, data) {
+        // if (error) throw error;
+        data.sort(function(a, b) {
+          if (a.Index > b.Index) {
+              return -1;
+          } else {
+              return 1;
+          }
+        });
+      
+        // Scale the range of the data in the domains
+        x.domain(data.map(function(d) { return d.DateAxes; }));
+        y.domain([0, d3.max(data, function(d) { return d.percent; }) + 15]);
+        // y.domain([0, 100]);
 
+        // append the rectangles for the bar chart
+        svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function(d) { return x(d.DateAxes); })
+            .attr("width", x.bandwidth())
+            .attr("y", function(d) { return y(d.percent); })
+            .attr("height", function(d) { return height - y(d.percent); })
+            .on("mousemove", function(d){
+              tooltip
+                .style("left", d3.event.pageX - 50 + "px")
+                .style("top", d3.event.pageY - 70 + "px")
+                .style("display", "inline-block")
+                .html(function() {
+                  val = d.percent;
+                  if(val < 1)
+                    return 0 + "%";
+                  else
+                    return (d.percent).toPrecision(4) + "%"
+                });
+          })
+          .on("mouseout", function(d){ tooltip.style("display", "none");});
+
+        // add the x Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // add the y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+      });
+    }
+    else if(OptionVal === "DownVotes") {
+      // get the data
+      d3.json("barchartdataDownVote", function(error, data) {
+        // if (error) throw error;
+        data.sort(function(a, b) {
+          if (a.Index > b.Index) {
+              return -1;
+          } else {
+              return 1;
+          }
+        });
+      
+        // Scale the range of the data in the domains
+        x.domain(data.map(function(d) { return d.DateAxes; }));
+        y.domain([0, d3.max(data, function(d) { return d.percent; }) + 15]);
+        // y.domain([0, 100]);
+
+        // append the rectangles for the bar chart
+        svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function(d) { return x(d.DateAxes); })
+            .attr("width", x.bandwidth())
+            .attr("y", function(d) { return y(d.percent); })
+            .attr("height", function(d) { return height - y(d.percent); })
+            .on("mousemove", function(d){
+              tooltip
+                .style("left", d3.event.pageX - 50 + "px")
+                .style("top", d3.event.pageY - 70 + "px")
+                .style("display", "inline-block")
+                .html(function() {
+                  val = d.percent;
+                  if(val < 1)
+                    return 0 + "%";
+                  else
+                    return (d.percent).toPrecision(4) + "%"
+                });
+          })
+          .on("mouseout", function(d){ tooltip.style("display", "none");});
+
+        // add the x Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // add the y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+      });
+    }
+    
+}
