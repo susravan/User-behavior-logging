@@ -50,42 +50,72 @@ def home():
         post = info[0] + " --> " + info[1] + " --> " + info[2]
         posts.append(post)
 
-    DateRange = [["-7 days","-1 second"],["-14 days", "-7 days"],["-21 days", "-14 days"],["-28 days", "-21 days"]]
-    
-    BarChartData = []
-    for start, end in DateRange:
-        tempDict = getDateRange("UserTracking.db", start, end)
-        DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
-        
-        BarData = [{"DateAxes": DateAxes}]
-        
-        for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
-            BarData[0][action] = getBarGraphTimeData("UserTracking.db", start, end, action)[0]["Percent"]
-        
-        BarChartData.extend(BarData)
-    print BarChartData
-    
     return render_template("index.html", posts=posts, userId=username)
 
 
 # Endpoint to get chart data
-@app.route('/barchartdata', methods=['GET'])
-def barchartdata():
-    DateRange = [["-7 days","-1 second"],["-14 days", "-7 days"],["-21 days", "-14 days"],["-28 days", "-21 days"]]
+@app.route('/barchartdataVisit', methods=['GET'])
+def barchartdataVisit():
+    DateRange = [["-56 days", "-49 days"],["-49 days", "-42 days"],["-42 days", "-35 days"],["-35 days", "-28 days"],["-28 days", "-21 days"],["-21 days", "-14 days"],["-14 days", "-7 days"],["-7 days","-1 second"]]
     
     BarChartData = []
     for start, end in DateRange:
         tempDict = getDateRange("UserTracking.db", start, end)
         DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
         
-        BarData = [{"DateAxes": DateAxes}]
+        BarData = [{'Index':1, "DateAxes": DateAxes}]
+        percent = getBarGraphTimeData("UserTracking.db", start, end, "Visited")[0]["Percent"]
         
-        for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
-            BarData[0][action] = getBarGraphTimeData("UserTracking.db", start, end, action)[0]["Percent"]
+        if percent == None:
+            BarData[0]["percent"] = 0.5
+        else:
+            BarData[0]["percent"] = percent
         
         BarChartData.extend(BarData)
     
     print BarChartData
+
+    return jsonify(BarChartData)
+
+# Endpoint to get chart data
+@app.route('/barchartdataUpVote', methods=['GET'])
+def barchartdataUpVote():
+    DateRange = [["-56 days", "-49 days"],["-49 days", "-42 days"],["-42 days", "-35 days"],["-35 days", "-28 days"],["-28 days", "-21 days"],["-21 days", "-14 days"],["-14 days", "-7 days"],["-7 days","-1 second"]]
+    
+    BarChartData = []
+    for start, end in DateRange:
+        tempDict = getDateRange("UserTracking.db", start, end)
+        DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
+        
+        BarData = [{'Index':1, "DateAxes": DateAxes}]
+        
+        # for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
+        BarData[0]["percent"] = getBarGraphTimeData("UserTracking.db", start, end, "UpVoted")[0]["Percent"]
+        
+        BarChartData.extend(BarData)
+    
+    # print BarChartData
+
+    return jsonify(BarChartData)
+
+# Endpoint to get chart data
+@app.route('/barchartdataDownVote', methods=['GET'])
+def barchartdataDownVote():
+    DateRange = [["-56 days", "-49 days"],["-49 days", "-42 days"],["-42 days", "-35 days"],["-35 days", "-28 days"],["-28 days", "-21 days"],["-21 days", "-14 days"],["-14 days", "-7 days"],["-7 days","-1 second"]]
+    
+    BarChartData = []
+    for start, end in DateRange:
+        tempDict = getDateRange("UserTracking.db", start, end)
+        DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
+        
+        BarData = [{'Index':1, "DateAxes": DateAxes}]
+        
+        # for action in ["Visited", "UpVoted", "DownVoted", "Shared"]:
+        BarData[0]["percent"] = getBarGraphTimeData("UserTracking.db", start, end, "DownVoted")[0]["Percent"]
+        
+        BarChartData.extend(BarData)
+    
+    # print BarChartData
 
     return jsonify(BarChartData)
 
@@ -136,11 +166,16 @@ def getDateRange(DBName, StartDate, EndDate):
 
 
 # Endpoint to get chart data
-@app.route('/chartdata', methods=['GET'])
-def chartdata():
-    return jsonify(get_tag_data())
+@app.route('/chartdataQA', methods=['GET'])
+def chartdataQA():
+    return jsonify(get_tag_dataQA())
 
-def get_tag_data():
+# Endpoint to get chart data
+@app.route('/chartdataPA', methods=['GET'])
+def chartdataPA():
+    return jsonify(get_tag_dataPA())
+
+def get_tag_dataQA():
     with sql.connect("UserTracking.db") as connection:
         conn = connection.cursor()
         conn.execute('select tag as label, count(tag) as count FROM \
@@ -148,21 +183,37 @@ def get_tag_data():
                 select distinct userId, evt_type, SUBSTR(tags, 0, instr(tags,"^")) AS tag , tmStamp from  \
                 ( \
                     select * from useractions \
-                    where evt_type = ? \
+                    where evt_type = ? AND userId = ? \
                 ) ua \
                 inner join ObjectDetails ob \
                 on ua.object_id = ob.object_id \
             ) t \
             group by tag \
-            LIMIT 8', ["Visited"])
-        
-        # chart_data = []
-        # for row in conn.fetchall():
-        #     for i, value in enumerate(row):
-        #         temp_dict = {}
-        #         temp_dict['label'] = conn.description[i][0]
-        #         temp_dict['count'] = value
-        #         chart_data.append(temp_dict)
+            LIMIT 5', ["Visited", entered_UserId])
+
+        chart_data = [dict((conn.description[i][0], value) \
+            for i, value in enumerate(row)) for row in conn.fetchall()]
+          
+        # print "chart_data = ", chart_data
+        conn.close()
+        return chart_data
+
+
+def get_tag_dataPA():
+    with sql.connect("UserTracking.db") as connection:
+        conn = connection.cursor()
+        conn.execute('select tag as label, count(tag) as count FROM \
+            ( \
+                select distinct userId, evt_type, SUBSTR(tags, 0, instr(tags,"^")) AS tag , tmStamp from  \
+                ( \
+                    select * from useractions \
+                    where evt_type = ? AND userId = ? \
+                ) ua \
+                inner join ObjectDetails ob \
+                on ua.object_id = ob.object_id \
+            ) t \
+            group by tag \
+            LIMIT 5', ["Posted Answer to", entered_UserId])
 
         chart_data = [dict((conn.description[i][0], value) \
             for i, value in enumerate(row)) for row in conn.fetchall()]
@@ -227,7 +278,7 @@ def login():
                 entered_UserId = username
             
                 # Get login time
-                now = datetime.datetime.now()
+                now = datetime.now()
                 curr_time = now.strftime("%Y-%m-%d %I:%M:%S %p")
                 curr_timestamp = int(time.time())
                 print curr_timestamp

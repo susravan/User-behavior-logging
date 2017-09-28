@@ -1,16 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 	<link rel="stylesheet" href="static/normalize.css">
+	<link rel="shortcut icon" href="">
+	
 	<p>
 		--> StackOverflow link - 
 		<a href="https://stackoverflow.com/questions/tagged/java?sort=frequent&pageSize=15">stackoverflow tag=java</a>
 	</p>
 	
-	<form>
-	    <label><input type="radio" name="dataset" id="dataset" value="total" checked> Total</label>
-	    <label><input type="radio" name="dataset" id="dataset" value="option1"> Option 1</label>
-	    <label><input type="radio" name="dataset" id="dataset" value="option2"> Option 2</label>
-	</form>
 
 	<table>
 		<tr>
@@ -26,13 +23,43 @@
 		</tr>
 	</table>
 	<br>
-	<div id="chart">
-	</div><br>
-	<h1>Your visited count</h1>
+	<div class='container'>
+		<h1>Relative frequency of tags among questions asked by <b>{{ userId }}</b></h1>
+		<table>
+			<tr>
+				<td>
+					<div id="chart"> </div>
+				</td>
+				<td></td>
+				<td>
+					<div id="chart2"> </div>
+					
+				</td>
+			</tr>
+			<tr>
+				<p> Description of the chart</p>
+			</tr>
+		</table>
+		
+		<br><br>
+		
+		<div>
+			<form>
+			    <label><input type="radio" name="dataset" id="dataset" value="Visits" checked> Visits</label><br>
+			    <label><input type="radio" name="dataset" id="dataset" value="UpVotes"> UpVotes</label><br>
+			    <label><input type="radio" name="dataset" id="dataset" value="DownVotes"> DownVotes</label><br>
+			</form>
+			<div id="barchart"> </div>
+		</div>
+		
 
-	<div id="barchart">
-	</div><br>
-	<h1>Open User Chart</h1>
+</div>
+	
+	<!-- <h1>Your visited count</h1> -->
+	<div id="barChartDiv" class='container'>
+		
+	</div>
+	<!-- <h1>Open User Chart</h1> -->
 
 	<script src={{ url_for('static', filename='jquery-3.2.1.min.js') }}></script>
 	<script src={{ url_for('static', filename='d3.min.js') }}></script>
