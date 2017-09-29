@@ -32,10 +32,10 @@ How to run the application:
 
 Features Implemented:
 1) Login page shows a form to take login and password data, shows previous login history
-2) Once logged in, app redirects to profile page where you can see the description of the actions being tracked and the user's behavioral logging data
+2) Once logged in, app redirects to profile page where you can see the illustrations of the actions being tracked compared to other users using the application
 3) At each screen, you have an option to add new user by clicking on "Add User" which redirects to another page to take new userid and new password as input
-4) The application already consists of three users - "aaa", "bbb" and "ccc", all with password - "123"
-5) Six actions are begin tracked by the application and it's details can be see in profile page once logged in
+4) The application already consists of three users -> "aaa", "bbb" and "ccc", all with password -> "123"
+5) Five actions are begin tracked by the application and it's details can be see in profile page once logged in
 
 Note:
 1) The web application is using a https server
