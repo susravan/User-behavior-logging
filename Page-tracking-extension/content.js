@@ -1,43 +1,3 @@
-
-// // Logging time spent on a page
-// $(document).ready(function() {
-// 	var user_id = "dummy";
-
-//   	var start;
-//   	var end;
-//   	var time_spent;
-
-// 	$(window).on('focus', function() {
-// 		start = Date.now();
-// 	});
-// 	console.log("start = ", start)
-
-// 	$(window).on('blur', function() {
-//   		end = Date.now();
-//   		console.log("end = ", end);
-//   		time_spent = (end - start)/1000;
-//   		console.log("time_spent = ", time_spent);
-
-//   		var evtData = {
-// 			"userId": user_id,
-// 			"evt_type": "Time Spent",
-// 			"pageHTML": document.URL,
-// 			"object_id": 0,
-// 			"evt_datetime": time_spent,
-// 			"evt_timestamp": Date.now()
-// 		};
-// 		console.log(evtData);
-
-
-// 		// Sending data to background.js
-// 		chrome.runtime.sendMessage({'evtData': evtData, 'quesData': null}, function(response) {
-// 		  // console.log(response.BgResponse);
-// 		});
-// 	});
-// });
-
-
-
 // Question click event handler
 $(document).ready(function(evt) {
 	var ques_id = document.URL.split('/')[4];
@@ -147,7 +107,6 @@ $('#submit-button').on('click', function() {
 
 // Share the question tracking
 $('.short-link').on('click', function() {
-	// console.log("share question");
 	
 	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";
@@ -242,7 +201,7 @@ $(".vote-down-off").on('click', function() {
 	});
 });
 
-console.log($('.btn'));
+// Ask Question Handler
 $('.btn').on('click', function() {
 	var ques_id = document.URL.split('/')[4];
 	var user_id = "dummy";

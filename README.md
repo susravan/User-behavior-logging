@@ -4,7 +4,9 @@ Adapt a webpage based on the user behaviour on that page. Once the adaptation is
 # Approach:
 **Step 1:** Develop a method to track and log user's activity on a given webpage - *Completed*
 
-**Step 2:** Analyze the behavior log activity and adapt the website - *In the process*
+**Step 2:** Visualize the collected data interactively comparing with other users in the profile page - *Completed*
+
+**Step 3:** Analyze the behavior log activity and adapt the website - *In the process*
 
 ## Step 1:
 ### Implementation Details:
@@ -15,9 +17,18 @@ Implemented a flask server and SQLite3 database for backend. Once the data is co
 **Technologies used:** Flask (python 2.7) for server setup, SQLite3 for backend database, JavaScript, jQuery for DOM event listeners and website development
 
 
+## Step 2:
+### Implementation Details:
+For interactive visualization, I have chosen d3.js as it is highly configurable and widely used in industry. After analyzing the data, I thought of using tags to get the user's skills from the questions he answers. To make a comparitive skill study, I made a pie chart and similarly for his visits from which we can tell his learning interests.
+
+Used bar chart to do comparitive study of user's interactions with the website in the past 2 months with other users.
+
+**Technologies used:** d3.js, JavaScript and jQuery
+
+
 ### Folder structure:
 * Page-tracking-extension - contains all the browser extension files
-* static - css and jquery files
+* static - css and js files
 * templates - html pages
 
 ### How to Setup:
