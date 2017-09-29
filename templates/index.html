@@ -47,15 +47,15 @@
 			<tbody>
 				<tr>
 					<td>
-						<div id="chart"> </div>
+						<div id="VisitsPiechart"> </div>
 					</td>
 					<td>
-						<div id="chart2"> </div>
+						<div id="AnswersPiechart"> </div>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<p>This chart illustrates the user's <b>asked questions</b> grouped by their<br>
+						<p>This chart illustrates the user's <b>visited questions</b> grouped by their<br>
 							topic. This gives us the insight about the user's learnings. If the  <br>
 							user looks for <i>Java</i> questions, we can infer that the user is <br>
 							interested in that topic and thus recommened topics based on this data
@@ -89,10 +89,10 @@
 			
 			<h3><b><u>Social visualization of user's actions</u></b></h3>
 			<form>
-				<input type="radio" name="dataset" id="dataset" value="Visits" checked onclick="change(this.value)"/> <label for="dataset">Visits</label><br>
-			    <input type="radio" name="dataset" id="dataset" value="UpVotes" onclick="change(this.value)"/><label for="dataset">UpVotes</label>
+				<input type="radio" name="dataset" id="dataset" value="Visited" checked onclick="change(this.value)"/> <label for="dataset">Visits</label><br>
+			    <input type="radio" name="dataset" id="dataset" value="UpVoted" onclick="change(this.value)"/><label for="dataset">UpVotes</label>
 			    <br>
-			    <input type="radio" name="dataset" id="dataset" value="DownVotes" onclick="change(this.value)"/><label for="dataset">DownVotes</label>
+			    <input type="radio" name="dataset" id="dataset" value="DownVoted" onclick="change(this.value)"/><label for="dataset">DownVotes</label>
 			    <br>
 			</form>
 			<div id="barchart"> </div>
@@ -111,7 +111,31 @@
 				Similarly, observing these trends helps us in finding ideal partners among users and pair up for their mutual benifits<br>
 			</p> 
 	</div>
-		
+	<br>
+	<br>
+	<div class="container">
+		<p class="small_font">
+			<b><i>**Disclaimer**</i></b><br>
+			<u>Actions tracked and their usage:</u><br>
+			1) <i>Visited Questions</i> - Topic interests
+			<i class="hidden_text">Tracks all the user visited question pages. This gives us the idea on the type of questions user interested in. From the votes, number of answers of the visited question gives us the insight into the tastes of user</i><br>
+			2) <i>Upvotes/ Downvotes</i> - Reading preferences
+			<i class="hidden_text">Can also be used for user's reading preferences on length of material, language and complexity level. Since this is explicit, chances of data being high accuracy</i><br>
+			3) <i>Shared</i> - High interest topics
+			<i class="hidden_text">User's high interest areas/ topics can be discovered by his sharing history</i><br>
+			4) <i>Asked Question</i> - Topics you are actively learning
+			<i class="hidden_text">Helps to find the "current focus area" of the user and also the area in which he hopes to improve</i>1<br>
+			5) <i>Posted Answer</i> - Your skills
+			<i class="hidden_text">Can be used to find out the level of expertise of user on different topics based on his answer's popularity</i><br>
+		</p>
+	</div>
+
+	<div>
+		{% for post in posts %}
+			{{ post }}
+			<br>
+		{% endfor %}
+	</div>
 
 </div>
 	<script src={{ url_for('static', filename='jquery-3.2.1.min.js') }}></script>

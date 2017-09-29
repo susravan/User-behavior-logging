@@ -46,81 +46,45 @@ def home():
         userDetails = c.fetchall()
     
     posts = []
-    for info in userDetails:
-        post = info[0] + " --> " + info[1] + " --> " + info[2]
-        posts.append(post)
+    # Not required when visualizations are shown
+    # for info in userDetails:
+    #     post = info[0] + " --> " + info[1] + " --> " + info[2]
+    #     posts.append(post)
 
     return render_template("index.html", posts=posts, userId=username)
 
-
 # Endpoint to get chart data
-@app.route('/barchartdataVisit', methods=['GET'])
-def barchartdataVisit():
+@app.route('/barchartdata', methods=['GET'])
+def barchartdata():
+    # Weeks to show on the X-axis of the bar chart
     DateRange = [["-56 days", "-49 days"],["-49 days", "-42 days"],["-42 days", "-35 days"],["-35 days", "-28 days"],["-28 days", "-21 days"],["-21 days", "-14 days"],["-14 days", "-7 days"],["-7 days","-1 second"]]
     
+    # To add additional events, change index.html, add event in below list, set default in index.js
     BarChartData = []
+    Index = 0   # Index is used for time axis ordering in the chart
+    EventList = ["Visited", "UpVoted", "DownVoted"]
+
+    # Get data for each week interval
     for start, end in DateRange:
+        # Get X-axis data string
         tempDict = getDateRange("UserTracking.db", start, end)
         DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
         
-        BarData = [{'Index':1, "DateAxes": DateAxes}]
-        percent = getBarGraphTimeData("UserTracking.db", start, end, "Visited")[0]["Percent"]
+        BarData = [{'Index':Index, "DateAxes": DateAxes}]
         
-        if percent == None:
-            BarData[0]["percent"] = 0.5
-        else:
-            BarData[0]["percent"] = percent
+        # For each event
+        for event in EventList:
+            percent = getBarGraphTimeData("UserTracking.db", start, end, event)[0]["Percent"]
         
-        BarChartData.extend(BarData)
-    
-    print BarChartData
-
-    return jsonify(BarChartData)
-
-# Endpoint to get chart data
-@app.route('/barchartdataUpVote', methods=['GET'])
-def barchartdataUpVote():
-    DateRange = [["-56 days", "-49 days"],["-49 days", "-42 days"],["-42 days", "-35 days"],["-35 days", "-28 days"],["-28 days", "-21 days"],["-21 days", "-14 days"],["-14 days", "-7 days"],["-7 days","-1 second"]]
-    
-    BarChartData = []
-    for start, end in DateRange:
-        tempDict = getDateRange("UserTracking.db", start, end)
-        DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
-        
-        BarData = [{'Index':1, "DateAxes": DateAxes}]
-        percent = getBarGraphTimeData("UserTracking.db", start, end, "UpVoted")[0]["Percent"]
-        
-        if percent == None:
-            BarData[0]["percent"] = 0.5
-        else:
-            BarData[0]["percent"] = percent
+            if percent == None or percent == 0:
+                BarData[0][event] = 0.5
+            else:
+                BarData[0][event] = percent
 
         BarChartData.extend(BarData)
+        Index += 1
     
     return jsonify(BarChartData)
-
-# Endpoint to get chart data
-@app.route('/barchartdataDownVote', methods=['GET'])
-def barchartdataDownVote():
-    DateRange = [["-56 days", "-49 days"],["-49 days", "-42 days"],["-42 days", "-35 days"],["-35 days", "-28 days"],["-28 days", "-21 days"],["-21 days", "-14 days"],["-14 days", "-7 days"],["-7 days","-1 second"]]
-    
-    BarChartData = []
-    for start, end in DateRange:
-        tempDict = getDateRange("UserTracking.db", start, end)
-        DateAxes = tempDict[0]['StartDate'] + " to " + tempDict[0]['EndDate']
-        
-        BarData = [{'Index':1, "DateAxes": DateAxes}]
-        percent = getBarGraphTimeData("UserTracking.db", start, end, "DownVoted")[0]["Percent"]
-        
-        if percent == None:
-            BarData[0]["percent"] = 0.5
-        else:
-            BarData[0]["percent"] = percent
-
-        BarChartData.extend(BarData)
-    
-    return jsonify(BarChartData)
-
 
 # Returns the bar chart data with StartDate, EndDate and percentage of total actions
 def getBarGraphTimeData(DBName, StartDate, EndDate, Event):
@@ -148,8 +112,10 @@ def getBarGraphTimeData(DBName, StartDate, EndDate, Event):
         
         chart_data = [dict((conn.description[i][0], value) \
             for i, value in enumerate(row)) for row in conn.fetchall()]
-        return chart_data
         conn.close()
+
+        return chart_data
+        
 
 # Returns the start and end dates
 def getDateRange(DBName, StartDate, EndDate):
@@ -166,16 +132,16 @@ def getDateRange(DBName, StartDate, EndDate):
 
 
 # Endpoint to get chart data
-@app.route('/chartdataQA', methods=['GET'])
+@app.route('/VisitsPiechart', methods=['GET'])
 def chartdataQA():
-    return jsonify(get_tag_dataQA())
+    return jsonify(getTagDataByEvent("Visited"))
 
 # Endpoint to get chart data
-@app.route('/chartdataPA', methods=['GET'])
+@app.route('/AnswersPiechart', methods=['GET'])
 def chartdataPA():
-    return jsonify(get_tag_dataPA())
+    return jsonify(getTagDataByEvent("Posted Answer to"))
 
-def get_tag_dataQA():
+def getTagDataByEvent(event):
     with sql.connect("UserTracking.db") as connection:
         conn = connection.cursor()
         conn.execute('select label, count from \
@@ -193,49 +159,11 @@ def get_tag_dataQA():
             group by tag \
             ) \
             order by count desc \
-            LIMIT 5', ["Visited", entered_UserId])
+            LIMIT 5', [event, entered_UserId])
 
         chart_data = [dict((conn.description[i][0], value) \
             for i, value in enumerate(row)) for row in conn.fetchall()]
           
-        # print "chart_data = ", chart_data
-        conn.close()
-        return chart_data
-
-
-def get_tag_dataPA():
-    with sql.connect("UserTracking.db") as connection:
-        conn = connection.cursor()
-        conn.execute('select tag as label, count(tag) as count FROM \
-            ( \
-                select distinct userId, evt_type, SUBSTR(tags, 0, instr(tags,"^")) AS tag , tmStamp from  \
-                ( \
-                    select * from useractions \
-                    where evt_type = ? AND userId = ? \
-                ) ua \
-                inner join ObjectDetails ob \
-                on ua.object_id = ob.object_id \
-            ) t \
-            group by tag \
-            LIMIT 5', ["Posted Answer to", entered_UserId])
-
-        chart_data = [dict((conn.description[i][0], value) \
-            for i, value in enumerate(row)) for row in conn.fetchall()]
-        print conn.fetchall()
-        print "chart_data from PA = ", chart_data
-        conn.close()
-        return chart_data
-
-
-def get_data():
-    with sql.connect("UserTracking.db") as connection:
-        conn = connection.cursor()
-        conn.execute('SELECT MAX(evt_type) AS event, COUNT(evt_type) AS count FROM UserActions WHERE userId = ? GROUP BY evt_type', [entered_UserId])
-        
-        chart_data = [dict((conn.description[i][0], value) \
-            for i, value in enumerate(row)) for row in conn.fetchall()]
-          
-        print "chart_data = ", jsonify(chart_data)
         conn.close()
         return chart_data
 
@@ -270,7 +198,7 @@ def login():
         # If POST request - validate the username and password and go to next page if valid
         if request.method == 'POST':
             validCount = c.execute('SELECT count(password) FROM UserDetails WHERE userId = ? and password = ?', [username, password]).fetchall()[0][0]
-            print "validCount = ", validCount
+            # print "validCount = ", validCount
 
             if validCount == 0:
                 error = "Invalid credentials. Please try again"
@@ -285,14 +213,12 @@ def login():
                 now = datetime.now()
                 curr_time = now.strftime("%Y-%m-%d %I:%M:%S %p")
                 curr_timestamp = int(time.time())
-                print curr_timestamp
+                # print curr_timestamp
 
                 c.execute('INSERT INTO UserHistory VALUES (?,?,?)', [username, curr_time, curr_timestamp])
                 return redirect(url_for('home', userId=request.form['username']))
 
         return render_template("login.html", error=error)
-
-
 
 
 @app.route('/adduser', methods=['GET', 'POST'])

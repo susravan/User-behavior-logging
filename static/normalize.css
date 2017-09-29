@@ -65,13 +65,22 @@ h1 {
 }
 
 rect {
-  cursor: pointer;                           /* NEW */
+  cursor: pointer;                           
   stroke-width: 2;
 }
 
-rect.disabled {                              /* NEW */
-  fill: transparent !important;              /* NEW */
-}                                            /* NEW */
+rect.disabled {                              
+  fill: transparent !important;              
+}                                            
 
+/* Color of bar chart */
 .bar { fill: steelblue; }
+
+.small_font {
+  font-size: 12px;
+}
+
+.hidden_text {
+  display: none;
+}
 </style>
