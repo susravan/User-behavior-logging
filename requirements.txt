@@ -16,8 +16,4 @@ simplejson==3.11.1
 six==1.11.0
 SQLAlchemy==1.1.14
 urllib3==1.22
-vboxapi==1.0
 virtualenv==15.1.0
-Werkzeug==0.12.2
-wxPython==3.0.2.0
-wxPython-common==3.0.2.0
