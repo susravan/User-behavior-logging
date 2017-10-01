@@ -13,7 +13,8 @@ import flask_login
 app = Flask(__name__)
 CORS(app)
 app.secret_key = "\xb6\xff7\xcdU\x80\xa6\xf6\xda\xe7&\xae\x80l\x90\xa9\xb5\x81\xc2A\x8f\xc6\xad,"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite3:////UserTracking.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite3:////UserTracking.db"   # For local
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://susravan:SuSravan1@userbehaviour.crdjf4jahsm3.us-east-1.rds.amazonaws.com/UserBeha
 
 # Create the sqlalchemy object
 db = SQLAlchemy(app)
